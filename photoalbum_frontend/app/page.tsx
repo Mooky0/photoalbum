@@ -1,0 +1,94 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { Container, ImageList, ImageListItem, ImageListItemBar, Select, MenuItem, Typography, Box } from '@mui/material';
+import { Photo, getPhotos } from '@/lib/axios';
+
+export default function Gallery() {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [ordering, setOrdering] = useState('-uploaded_at');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    getPhotos(ordering)
+      .then((data) => {
+        // Itt a 'data'-t vizsgáld, ne a 'photos'-t!
+        if (data && Array.isArray(data)) {
+          setPhotos(data);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Hiba történt:", err);
+        setLoading(false);
+      });
+  }, [ordering]);
+
+  // Biztonságos dátumformázó függvény
+  const formatDate = (dateStr: string) => {
+    try {
+      // Kicseréljük a szóközt T-re, hogy a JS biztosan felismerje
+      const isoStr = dateStr.replace(' ', 'T');
+      const date = new Date(isoStr);
+      return date.toLocaleString('hu-HU', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (e) {
+      return dateStr; // Ha nem sikerül, visszaadjuk az eredeti szöveget
+    }
+  };
+
+  return (
+    <Container sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>Fénykép Album</Typography>
+      
+      <Select 
+        value={ordering} 
+        onChange={(e) => setOrdering(e.target.value)} 
+        sx={{ mb: 3, minWidth: 200 }}
+      >
+        <MenuItem value="name">Név szerint (A-Z)</MenuItem>
+        <MenuItem value="-name">Név szerint (Z-A)</MenuItem>
+        <MenuItem value="-uploaded_at">Legújabb elöl</MenuItem>
+        <MenuItem value="uploaded_at">Legrégebbi elöl</MenuItem>
+      </Select>
+
+      {loading ? (
+        <Typography>Betöltés...</Typography>
+      ) : photos.length === 0 ? (
+        <Typography>Nincsenek még feltöltött fényképek.</Typography>
+      ) : (
+        <ImageList cols={3} gap={12}>
+          {photos.map((photo) => (
+            <ImageListItem 
+              key={photo.id} 
+              sx={{ 
+                cursor: 'pointer', 
+                borderRadius: 2, 
+                overflow: 'hidden',
+                boxShadow: 3,
+                '&:hover': { transform: 'scale(1.02)', transition: '0.3s' } 
+              }} 
+              onClick={() => window.open(photo.image, '_blank')}
+            >
+              <img 
+                src={photo.image} 
+                alt={photo.name} 
+                loading="lazy" 
+                style={{ height: '250px', objectFit: 'cover' }} 
+              />
+              <ImageListItemBar
+                title={photo.name}
+                subtitle={`Feltöltő: ${photo.owner_name} | ${formatDate(photo.uploaded_at)}`}
+              />
+            </ImageListItem>
+          ))}
+        </ImageList>
+      )}
+    </Container>
+  );
+}
