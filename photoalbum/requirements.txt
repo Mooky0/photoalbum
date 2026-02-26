@@ -25,7 +25,6 @@ gunicorn==25.1.0
 idna==3.11
 isodate==0.7.2
 jmespath==1.1.0
-minio-py3==1.0.1.1
 mssql-django==1.6
 packaging==26.0
 pillow==12.1.1

@@ -16,7 +16,6 @@ class PhotoViewSet(viewsets.ModelViewSet):
     ordering = ['-uploaded_at']
 
     def perform_create(self, serializer):
-        # A Django ImageField + django-storages most automatikusan feltölti a képet a MinIO-ba!
         serializer.save(owner=self.request.user)
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):
