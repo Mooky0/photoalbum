@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+import dj_database_url
+from datetime import timedelta
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +31,9 @@ SECRET_KEY = 'django-insecure-82bx5)5+y-s6x=gek3rqkf7ih1f^u*kl)-n-9_e7h4q$lfm1!*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+IS_RENDER = os.environ.get('RENDER') is not None
+
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1,localhost").split(",")
 
 
 # Application definition
@@ -44,40 +51,6 @@ INSTALLED_APPS = [
     'corsheaders',
     #'storage',
 ]
-
-
-if DEBUG:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3.S3Storage",
-            "OPTIONS": {
-                "access_key": "minioadmin",
-                "secret_key": "minioadmin123",
-                "bucket_name": "photoalbum",
-                "endpoint_url": "http://localhost:9000",
-                "use_ssl": False,
-                "querystring_auth": False,
-                "region_name": "us-east-1",
-            },
-        },  
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
-            "OPTIONS": {
-                "bucket_name": "photoalbum-f041om",
-                "project_id": "project-17185678-3fa3-4632-8ce",
-            },
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-    GS_DEFAULT_ACL = "publicRead"
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -110,6 +83,20 @@ else:
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 
+SIMPLE_JWT = {
+    # Az Access Token érvényességi ideje (ezt hívod lease time-nak)
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2), 
+    
+    # A Refresh Token érvényességi ideje
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    
+    # Opcionális: Ha True, a refresh token használatakor új refresh tokent is kapsz
+    'ROTATE_REFRESH_TOKENS': False,
+    
+    # Opcionális: Ha True, a régi refresh token feketelistára kerül használat után
+    'BLACKLIST_AFTER_ROTATION': False,
+}
+
 ROOT_URLCONF = 'photo_album.urls'
 
 TEMPLATES = [
@@ -133,24 +120,60 @@ WSGI_APPLICATION = 'photo_album.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-if DEBUG:
+if DEBUG or not IS_RENDER:
+    # HELYI FUTTATÁS (akár python manage.py runserver, akár helyi gunicorn)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get("DB_NAME", "photoalbum-f041om"),
-            'USER': os.environ.get("DB_USER", "postgres"),
-            'PASSWORD': os.environ.get("DB_PASSWORD", "your-db-password"),
-            # The Magic Part: Connection via Unix Socket
-            'HOST': f'/cloudsql/project-17185678-3fa3-4632-8ce:europe-west6:photoalbum-f041om',
-        }
+    account_key = os.environ.get('AZURE_ACCOUNT_KEY')
+    if account_key is None:
+        raise 
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "account_name": "photoalbumf041om",
+                "account_key": account_key,
+                "azure_container": "photos", # Amit az előbb hoztál létre
+                "expiration_secs": None,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
     }
+else:
+    # EZ CSAK A AZURE-BAN FOG FUTNI
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600
+        )
+    }
+    account_key = os.environ.get('AZURE_ACCOUNT_KEY')
+    if account_key is None:
+        raise 
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "account_name": "photoalbumf041om",
+                "account_key": account_key,
+                "azure_container": "photos", # Amit az előbb hoztál létre
+                "expiration_secs": None,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Password validation
@@ -188,3 +211,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+RUN_SERVER_PORT = 8080
