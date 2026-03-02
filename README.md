@@ -40,3 +40,5 @@ Node.js környezet Renderen.
 
 Ezek a Render web dashboardon beállítva a szükséges Environment variables-el.
 Blob storage és adatbázis egyszer kézzel deployolva.
+
+Az alkalmazás elérhető: [https://photo-album-frontend-17wf.onrender.com](https://photo-album-frontend-17wf.onrender.com)
