@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Container, ImageList, ImageListItem, ImageListItemBar, Select, MenuItem, Typography, Box } from '@mui/material';
+import { Container, ImageList, ImageListItem, ImageListItemBar, Select, MenuItem, Typography } from '@mui/material';
 import { Photo, getPhotos } from '@/lib/axios';
 
 export default function Gallery() {
@@ -12,7 +12,6 @@ export default function Gallery() {
     setLoading(true);
     getPhotos(ordering)
       .then((data) => {
-        // Itt a 'data'-t vizsgáld, ne a 'photos'-t!
         if (data && Array.isArray(data)) {
           setPhotos(data);
         }
@@ -24,10 +23,8 @@ export default function Gallery() {
       });
   }, [ordering]);
 
-  // Biztonságos dátumformázó függvény
   const formatDate = (dateStr: string) => {
     try {
-      // Kicseréljük a szóközt T-re, hogy a JS biztosan felismerje
       const isoStr = dateStr.replace(' ', 'T');
       const date = new Date(isoStr);
       return date.toLocaleString('hu-HU', {
@@ -38,7 +35,7 @@ export default function Gallery() {
         minute: '2-digit'
       });
     } catch (e) {
-      return dateStr; // Ha nem sikerül, visszaadjuk az eredeti szöveget
+      return dateStr;
     }
   };
 
@@ -57,9 +54,9 @@ export default function Gallery() {
       </Select>
 
       {loading ? (
-        <Typography>Betöltés...</Typography>
+        <Typography>Loading...</Typography>
       ) : photos.length === 0 ? (
-        <Typography>Nincsenek még feltöltött fényképek.</Typography>
+        <Typography>No uploaded photos.</Typography>
       ) : (
         <ImageList cols={3} gap={12}>
           {photos.map((photo) => (

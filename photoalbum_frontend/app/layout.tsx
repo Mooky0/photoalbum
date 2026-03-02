@@ -1,4 +1,4 @@
-import Navbar from "./components/navbar"; // Ügyelj az elérési útra
+import Navbar from "./components/navbar";
 
 export default function RootLayout({
   children,

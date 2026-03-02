@@ -128,21 +128,21 @@ if DEBUG or not IS_RENDER:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    account_key = os.environ.get('AZURE_ACCOUNT_KEY')
-    if account_key is None:
-        raise 
     STORAGES = {
         "default": {
-            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "BACKEND": "storages.backends.s3.S3Storage",
             "OPTIONS": {
-                "account_name": "photoalbumf041om",
-                "account_key": account_key,
-                "azure_container": "photos", # Amit az előbb hoztál létre
-                "expiration_secs": None,
+                "access_key": "minioadmin",
+                "secret_key": "minioadmin123",
+                "bucket_name": "photoalbum",
+                "endpoint_url": "http://localhost:9000",
+                "use_ssl": False,
+                "querystring_auth": False,
+                "region_name": "us-east-1",
             },
-        },
+        },  
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
 else:
