@@ -44,17 +44,16 @@ export default function Gallery() {
 
   return (
     <Container sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>Fénykép Album</Typography>
       
       <Select 
         value={ordering} 
         onChange={(e) => setOrdering(e.target.value)} 
         sx={{ mb: 3, minWidth: 200 }}
       >
-        <MenuItem value="name">Név szerint (A-Z)</MenuItem>
-        <MenuItem value="-name">Név szerint (Z-A)</MenuItem>
-        <MenuItem value="-uploaded_at">Legújabb elöl</MenuItem>
-        <MenuItem value="uploaded_at">Legrégebbi elöl</MenuItem>
+        <MenuItem value="name">By name (A-Z)</MenuItem>
+        <MenuItem value="-name">By name (Z-A)</MenuItem>
+        <MenuItem value="-uploaded_at">By date (newest first)</MenuItem>
+        <MenuItem value="uploaded_at">By date (oldest first)</MenuItem>
       </Select>
 
       {loading ? (
@@ -83,7 +82,7 @@ export default function Gallery() {
               />
               <ImageListItemBar
                 title={photo.name}
-                subtitle={`Feltöltő: ${photo.owner_name} | ${formatDate(photo.uploaded_at)}`}
+                subtitle={`Owner: ${photo.owner_name} | ${formatDate(photo.uploaded_at)}`}
               />
             </ImageListItem>
           ))}
