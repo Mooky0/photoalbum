@@ -28,6 +28,7 @@ export default function LoginPage() {
         localStorage.setItem('refresh_token', response.data.refresh);
 
         toast.success('Login successful! 🎉');
+        window.location.href = '/';
         router.push('/');
         router.refresh();
       }
