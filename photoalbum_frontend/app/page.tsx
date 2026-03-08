@@ -202,7 +202,7 @@ const PhotoGalleryDialog = ({ open, onClose, photo }: PhotoDialogProps) => {
             Uploaded by: {photo.owner_name}
           </Typography>
           <Typography variant="caption" sx={{ opacity: 0.6, display: 'block' }}>
-            Date: {new Date(photo.uploaded_at).toLocaleDateString()}
+            Uploaded at: {new Date(photo.uploaded_at.replace(' ', 'T')).toLocaleString('hu-HU')}
           </Typography>
         </Box>
       </DialogContent>

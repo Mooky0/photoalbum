@@ -2,11 +2,11 @@ import axios from 'axios';
 
 // Az interfésznek PONTOSAN követnie kell a JSON kulcsokat
 export interface Photo {
-    id: number;          // Az API-ban: 1 (szám)
-    name: string;        // Az API-ban: "Teszt Kep"
-    image: string;       // Az API-ban: "http://..."
-    uploaded_at: string; // Az API-ban: "2026-02-18 18:44" (snake_case!)
-    owner_name: string;  // Az API-ban: "tothg" (snake_case!)
+    id: number;
+    name: string;
+    image: string;
+    uploaded_at: string;
+    owner_name: string;
 }
 
 interface PaginatedResponse<T> {
