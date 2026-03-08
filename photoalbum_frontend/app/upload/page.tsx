@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Container, Typography, TextField, Button, Box, Paper, 
-  Alert, CircularProgress, IconButton 
+  Alert, CircularProgress 
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,6 @@ export default function UploadPage() {
   
   const router = useRouter();
 
-  // Ellenőrizzük, hogy be van-e jelentkezve a felhasználó
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) {
@@ -26,7 +25,6 @@ export default function UploadPage() {
     }
   }, [router]);
 
-  // Kép előnézet generálása
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
@@ -45,7 +43,6 @@ export default function UploadPage() {
     setLoading(true);
     setStatus(null);
 
-    // FormData használata kötelező fájlfeltöltésnél
     const formData = new FormData();
     formData.append('image', file);
     formData.append('name', name);

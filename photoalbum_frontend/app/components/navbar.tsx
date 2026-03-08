@@ -20,73 +20,75 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar 
-      position="static" 
-      sx={{ 
-        bgcolor: "background.paper", 
-        color: "text.primary", 
-        boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.1)" // Finomabb árnyék
-      }}
-    >
-      <Container maxWidth="lg"> {/* A Toolbar helyett a Container centerez jobban */}
-        <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          
-          <Typography 
-            variant="h5" 
-            sx={{ 
-              fontWeight: "bold", 
-              textDecoration: 'none',
-              color: 'inherit',
-              lineHeight: 1, // Fixálja a függőleges elcsúszást
-              m: 0 // Eltünteti az alapértelmezett margót
-            }}
-            component={Link}
-            href="/"
-          >
-            Photo Album
-          </Typography>
+    <>
+      <AppBar 
+        position="static" 
+        sx={{ 
+          bgcolor: "background.paper", 
+          color: "text.primary", 
+          boxShadow: "0px 2px 4px -1px rgba(0,0,0,0.1)"
+        }}
+      >
+        <Container maxWidth="lg"> {}
+          <Toolbar disableGutters sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            
+            <Typography 
+              variant="h5" 
+              sx={{ 
+                fontWeight: "bold", 
+                textDecoration: 'none',
+                color: 'inherit',
+                lineHeight: 1,
+                m: 0 
+              }}
+              component={Link}
+              href="/"
+            >
+              Photo Album
+            </Typography>
 
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            {isLoggedIn ? (
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button 
-                  variant="outlined" 
-                  color="error" 
-                  size="small"
-                  onClick={handleLogout}
-                  sx={{ borderRadius: "8px" }}
-                >
-                  Logout
-                </Button>
-                <Button component={Link} href="/upload" size="small">
-                  Upload
-                </Button>
-              </Box>
-            ) : (
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button 
-                  variant="text" 
-                  component={Link} 
-                  href="/register"
-                  size="small"
-                >
-                  Register
-                </Button>
-                <Button 
-                  variant="contained" 
-                  component={Link} 
-                  href="/login"
-                  size="small"
-                  sx={{ borderRadius: "8px" }}
-                >
-                  Login
-                </Button>
-              </Box>
-            )}
-          </Box>
-          
-        </Toolbar>
-      </Container>
-    </AppBar>
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              {isLoggedIn ? (
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button 
+                    variant="outlined" 
+                    color="error" 
+                    size="small"
+                    onClick={handleLogout}
+                    sx={{ borderRadius: "8px" }}
+                  >
+                    Logout
+                  </Button>
+                  <Button component={Link} href="/upload" size="small">
+                    Upload
+                  </Button>
+                </Box>
+              ) : (
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button 
+                    variant="text" 
+                    component={Link} 
+                    href="/register"
+                    size="small"
+                  >
+                    Register
+                  </Button>
+                  <Button 
+                    variant="contained" 
+                    component={Link} 
+                    href="/login"
+                    size="small"
+                    sx={{ borderRadius: "8px" }}
+                  >
+                    Login
+                  </Button>
+                </Box>
+              )}
+            </Box>
+            
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </>
   );
 }

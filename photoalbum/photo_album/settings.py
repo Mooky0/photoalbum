@@ -140,9 +140,9 @@ if DEBUG or not IS_RENDER:
                 "querystring_auth": False,
                 "region_name": "us-east-1",
             },
-        },
+        },  
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         },
     }
 else:
