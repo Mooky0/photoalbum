@@ -1,27 +1,28 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { Container, 
-  ImageList, 
-  ImageListItem, 
-  ImageListItemBar, 
-  Select, 
-  MenuItem, 
-  Typography, 
+import { useEffect, useState, useCallback } from 'react';
+import {
+  Container,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  Select,
+  MenuItem,
+  Typography,
   Dialog,
   DialogContent,
   DialogActions,
   IconButton,
   Box,
-  Button, 
+  Button,
 } from '@mui/material';
 import { Photo, getPhotos } from '@/lib/axios';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
+import api from '@/lib/axios';
 
 interface PhotoDialogProps {
   open: boolean;
   onClose: () => void;
-  onDelete: () => void;
   photo: Photo | null;
 }
 
@@ -32,12 +33,24 @@ export default function Gallery() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
-  const handleDelete = () => {
+  const deletePhoto = useCallback((id: number) => {
+    return api.delete(`/photos/${id}/`);
+  }, []);
+
+  const handleDelete = useCallback(() => {
+    if (!selectedPhoto) return;
     if (confirm('Are you sure you want to delete this?')) {
-      console.log('Deleting photo...');
-      setIsDialogOpen(false);
+      deletePhoto(selectedPhoto.id)
+        .then(() => {
+          setPhotos((prev) => prev.filter((p) => p.id !== selectedPhoto.id));
+          setIsDialogOpen(false);
+        })
+        .catch((err) => {
+          console.error('Error deleting photo:', err);
+          alert('Failed to delete photo. Please try again.');
+        });
     }
-  };
+  }, [selectedPhoto, deletePhoto]);
 
   useEffect(() => {
     setLoading(true);
@@ -90,42 +103,54 @@ export default function Gallery() {
         <Typography>No uploaded photos.</Typography>
       ) : (
         <>
-        <ImageList cols={3} gap={12}>
-          {photos.map((photo) => (
-            <ImageListItem
-              key={photo.id}
-              sx={{
-                cursor: 'pointer',
-                borderRadius: 2,
-                overflow: 'hidden',
-                boxShadow: 3,
-                '&:hover': { transform: 'scale(1.02)', transition: '0.3s' }
-              }}
-              onClick={() => {
-                setSelectedPhoto(photo);
-                setIsDialogOpen(true);
-              }}
-            >
-              <img
-                src={photo.image}
-                alt={photo.name}
-                loading="lazy"
-                style={{ height: '250px', objectFit: 'cover' }}
-              />
-              <ImageListItemBar
-                title={photo.name}
-                subtitle={`Owner: ${photo.owner_name} | ${formatDate(photo.uploaded_at)}`}
-              />
-            </ImageListItem>
-          ))}
-        </ImageList>
+          <ImageList cols={3} gap={12}>
+            {photos.map((photo) => (
+              <ImageListItem
+                key={photo.id}
+                sx={{
+                  cursor: 'pointer',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  boxShadow: 3
+                }}
+                onClick={() => {
+                  setSelectedPhoto(photo);
+                  setIsDialogOpen(true);
+                }}
+              >
+                <img
+                  src={photo.image}
+                  alt={photo.name}
+                  loading="lazy"
+                  style={{ height: '250px', objectFit: 'cover' }}
+                />
+                <ImageListItemBar
+                  title={photo.name}
+                  subtitle={`Owner: ${photo.owner_name} | ${formatDate(photo.uploaded_at)}`}
+                  actionIcon={
+                    <IconButton
+                      sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                      aria-label={`delete ${photo.name}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete ${photo.name}?`)) {
+                          deletePhoto(photo.id).then(() => {
+                            setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
+                          }).catch(console.error);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  actionPosition="right"
+                />
+              </ImageListItem>
+            ))}
+          </ImageList>
           <PhotoGalleryDialog
-            open={!!selectedPhoto} // Boolean check: if selectedPhoto is not null, it's open
-            onClose={() => setSelectedPhoto(null)} // Clear the photo to close
-            onDelete={() => {
-              handleDelete();
-              setSelectedPhoto(null); // Ensure it closes on delete too
-            }}
+            open={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
             photo={selectedPhoto}
           />
         </>
@@ -134,19 +159,17 @@ export default function Gallery() {
   );
 }
 
-const PhotoGalleryDialog = ({ open, onClose, onDelete, photo }: PhotoDialogProps) => {
+const PhotoGalleryDialog = ({ open, onClose, photo }: PhotoDialogProps) => {
   if (!photo) return null;
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      maxWidth="md" 
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
       fullWidth
-      // This ensures the backdrop click closes the dialog
       slotProps={{ backdrop: { style: { backgroundColor: 'rgba(0, 0, 0, 0.8)' } } }}
     >
-      {/* Close Button on Top Right */}
       <IconButton
         onClick={onClose}
         sx={{
@@ -161,7 +184,6 @@ const PhotoGalleryDialog = ({ open, onClose, onDelete, photo }: PhotoDialogProps
       </IconButton>
 
       <DialogContent sx={{ p: 0, backgroundColor: '#1a1a1a', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        {/* Image Display */}
         <Box
           component="img"
           src={photo.image}
@@ -174,7 +196,6 @@ const PhotoGalleryDialog = ({ open, onClose, onDelete, photo }: PhotoDialogProps
           }}
         />
 
-        {/* Info Section */}
         <Box sx={{ p: 3, width: '100%', color: 'white' }}>
           <Typography variant="h6">{photo.name}</Typography>
           <Typography variant="body2" sx={{ opacity: 0.8 }}>
@@ -185,17 +206,6 @@ const PhotoGalleryDialog = ({ open, onClose, onDelete, photo }: PhotoDialogProps
           </Typography>
         </Box>
       </DialogContent>
-
-      <DialogActions sx={{ backgroundColor: '#1a1a1a', px: 3, pb: 2 }}>
-        <Button 
-          variant="outlined" 
-          color="error" 
-          startIcon={<DeleteIcon />} 
-          onClick={onDelete}
-        >
-          Delete Photo
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };
