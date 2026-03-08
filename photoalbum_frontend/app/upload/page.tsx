@@ -59,7 +59,7 @@ export default function UploadPage() {
 
       setStatus({ type: 'success', msg: 'A kép sikeresen feltöltve!' });
       // 2 másodperc múlva visszairányítunk a galériába
-      setTimeout(() => router.push('/'), 2000);
+      setTimeout(() => router.push('/'), 200);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Hiba történt a feltöltés során.';
       setStatus({ type: 'error', msg: errorMsg });

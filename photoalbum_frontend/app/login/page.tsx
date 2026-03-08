@@ -19,6 +19,8 @@ export default function LoginPage() {
  
     if (response.status === 200) {
       localStorage.setItem('access_token', response.data.access)
+      localStorage.setItem('refresh_token', response.data.refresh)
+      window.location.href = '/'
       router.push('/')
     } else {
       alert('Login failed')
