@@ -55,7 +55,6 @@ export default function UploadPage() {
       });
 
       setStatus({ type: 'success', msg: 'A kép sikeresen feltöltve!' });
-      // 2 másodperc múlva visszairányítunk a galériába
       setTimeout(() => router.push('/'), 200);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Hiba történt a feltöltés során.';
@@ -87,6 +86,7 @@ export default function UploadPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={loading}
+            inputProps={{ maxLength: 40 }}
           />
 
           <Box sx={{ mt: 2, mb: 2, textAlign: 'center' }}>
