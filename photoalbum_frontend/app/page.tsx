@@ -39,7 +39,7 @@ export default function Gallery() {
 
   const handleDelete = useCallback(() => {
     if (!selectedPhoto) return;
-    if (confirm('Are you sure you want to delete this?')) {
+    if (confirm('Biztosan törölni szeretnéd ezt a fotót?')) {
       deletePhoto(selectedPhoto.id)
         .then(() => {
           setPhotos((prev) => prev.filter((p) => p.id !== selectedPhoto.id));
