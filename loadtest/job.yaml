@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-load-test
+  namespace: photoalbum-f041om
+spec:
+  template:
+    spec:
+      containers:
+      - name: k6
+        image: grafana/k6:latest
+        command: ["k6", "run", "/scripts/script.js"]
+        volumeMounts:
+        - name: k6-script
+          mountPath: /scripts
+      restartPolicy: Never
+      volumes:
+      - name: k6-script
+        configMap:
+          name: k6-script

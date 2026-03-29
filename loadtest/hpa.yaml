@@ -1,0 +1,126 @@
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: photoalbum-backend-hpa
+  namespace: photoalbum-f041om
+  uid: 27ad2794-8099-416c-91d8-d03208422285
+  resourceVersion: '13973541'
+  creationTimestamp: '2026-03-28T19:05:08Z'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: autoscaling/v2
+      time: '2026-03-28T19:27:31Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:behavior':
+            .: {}
+            'f:scaleDown':
+              .: {}
+              'f:policies': {}
+              'f:selectPolicy': {}
+              'f:stabilizationWindowSeconds': {}
+            'f:scaleUp':
+              .: {}
+              'f:policies': {}
+              'f:selectPolicy': {}
+              'f:stabilizationWindowSeconds': {}
+          'f:maxReplicas': {}
+          'f:metrics': {}
+          'f:minReplicas': {}
+          'f:scaleTargetRef':
+            'f:apiVersion': {}
+            'f:kind': {}
+            'f:name': {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: autoscaling/v2
+      time: '2026-03-29T19:22:47Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:conditions':
+            .: {}
+            'k:{"type":"AbleToScale"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"ScalingActive"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"ScalingLimited"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:currentMetrics': {}
+          'f:currentReplicas': {}
+          'f:desiredReplicas': {}
+          'f:lastScaleTime': {}
+      subresource: status
+spec:
+  scaleTargetRef:
+    kind: Deployment
+    name: photoalbum-backend
+    apiVersion: apps/v1
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      selectPolicy: Max
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 60
+      selectPolicy: Max
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+status:
+  lastScaleTime: '2026-03-29T19:18:46Z'
+  currentReplicas: 1
+  desiredReplicas: 1
+  currentMetrics:
+    - type: Resource
+      resource:
+        name: cpu
+        current:
+          averageValue: 1m
+          averageUtilization: 0
+  conditions:
+    - type: AbleToScale
+      status: 'True'
+      lastTransitionTime: '2026-03-28T19:05:23Z'
+      reason: ReadyForNewScale
+      message: recommended size matches current size
+    - type: ScalingActive
+      status: 'True'
+      lastTransitionTime: '2026-03-28T19:05:23Z'
+      reason: ValidMetricFound
+      message: the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+    - type: ScalingLimited
+      status: 'True'
+      lastTransitionTime: '2026-03-29T19:22:47Z'
+      reason: TooFewReplicas
+      message: the desired replica count is less than the minimum replica count
