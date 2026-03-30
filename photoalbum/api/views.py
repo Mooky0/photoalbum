@@ -27,6 +27,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def perform_destroy(self, instance):
+        instance.file.delete(save=False)
         instance.delete()
 
 class UserRegistrationViewSet(viewsets.ModelViewSet):

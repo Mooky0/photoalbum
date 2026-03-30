@@ -18,7 +18,7 @@ Az alkalmazás 3 fő részre oszlik: kliensoldalra, a szerveroldali logikára é
 
 ### Adattárolás (Persistance) réteg
 
-- SQL adatbázis: PostgreSQL adatbázis Renderen. Felhasználók, metaadatok tárolása.
+- SQL adatbázis: PostgreSQL adatbázis. Felhasználók, metaadatok tárolása.
 - Objektumtároló: Azure Blob Storage a képek tárolására. Public read only módban. 
 - Hely fehjlesztés: SQLite és MinIO (S3)
 
@@ -27,18 +27,19 @@ Az alkalmazás 3 fő részre oszlik: kliensoldalra, a szerveroldali logikára é
 A projekt CI/CD folyamata a Render platformon keresztül automatizált:
 
 ### Backend
-Python3 környezet Renderen.
+Deployment OKD Kubernetesen.
 
-- `build.sh` futtatása: függőségek telepítése -> Adatbázis migráció -> Statikus fájlok gyűjtése.
+- A Dockerfile alapján készíti a OKD BuildConfig az image-et amit egy Deployment-el futtat.
 - Gunicorn indítása: `photo_album.wsgi:application`
   
 ### Frontend
-Node.js környezet Renderen.
+Deployment OKD Kubernetesen.
 
-- Build: `npm install && npm run build`
+- Build: `npm install && npm run build` az OKD NextJS alapbelállításaival
 - Futtatás: `npm run start`
 
-Ezek a Render web dashboardon beállítva a szükséges Environment variables-el.
 Blob storage és adatbázis egyszer kézzel deployolva.
 
-Az alkalmazás elérhető: [https://photo-album-frontend-17wf.onrender.com](https://photo-album-frontend-17wf.onrender.com)
+Az alkalmazás elérhető: [https://photoalbum-frontend-photoalbum-f041om.apps.okd.fured.cloud.bme.hu/](https://photoalbum-frontend-photoalbum-f041om.apps.okd.fured.cloud.bme.hu/)
+
+Az alkalmazás skálázás leírása [itt](loadtest/README.md) található.

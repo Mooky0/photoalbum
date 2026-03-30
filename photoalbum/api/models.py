@@ -11,6 +11,11 @@ class Photo(models.Model):
     
     def __str__(self):
         return f"{self.name} ({self.owner.username})"
+    
+    def delete(self, *args, **kwargs):
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)
 
     class Meta:
         ordering = ['-uploaded_at']
