@@ -23,6 +23,10 @@ resource "kubernetes_deployment" "frontend" {
             name  = "NODE_ENV"
             value = "production"
           }
+          env {
+            name  = "NEXT_PUBLIC_API_URL"
+            value = var.backend_api_url
+          }
 
           readiness_probe {
             tcp_socket { port = 3000 }
