@@ -1,2 +1,6 @@
 *.pdf
 *.DS_Store
+infra/terraform/terraform.tfvars
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.backup
+infra/terraform/.terraform/

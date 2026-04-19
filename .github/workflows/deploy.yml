@@ -68,6 +68,19 @@ jobs:
           restore-keys: terraform-state-${{ github.ref_name }}-
           save-always: true
 
+      - name: Configure kubectl for OKD
+        run: |
+          kubectl config set-cluster okd \
+            --server="${{ secrets.OKD_HOST }}" \
+            --insecure-skip-tls-verify=true
+          kubectl config set-credentials github-actions \
+            --token="${{ secrets.OKD_TOKEN }}"
+          kubectl config set-context okd \
+            --cluster=okd \
+            --user=github-actions \
+            --namespace="photoalbum-f041om"
+          kubectl config use-context okd
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
