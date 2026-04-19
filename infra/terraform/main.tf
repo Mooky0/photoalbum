@@ -9,16 +9,7 @@ terraform {
       version = "~> 2.0"
     }
   }
-
-  # Remote state in Azure Blob Storage.
-  # Bootstrap: create the storage account "photoalbumtfstate" manually ONCE,
-  # then run: terraform init -backend-config="access_key=<key>"
-  backend "azurerm" {
-    resource_group_name  = "photoalbum-tf-state"
-    storage_account_name = "photoalbumtfstate"
-    container_name       = "tfstate"
-    key                  = "photoalbum.tfstate"
-  }
+  # State is stored locally; in CI the workflow caches terraform.tfstate between runs.
 }
 
 provider "azurerm" {
