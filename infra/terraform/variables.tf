@@ -8,7 +8,7 @@ variable "subscription_id" {
 variable "resource_group_name" {
   description = "Azure resource group name"
   type        = string
-  default     = "photoalbum-rg"
+  default     = "PaaS-Labor-2026"
 }
 
 variable "location" {
