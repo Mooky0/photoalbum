@@ -75,7 +75,7 @@ variable "django_secret_key" {
 variable "backend_api_url" {
   description = "Public backend URL passed to the frontend as NEXT_PUBLIC_API_URL"
   type        = string
-  default     = "https://photoalbum-backend-photoalbum-f041om.apps.okd.fured.cloud.bme.hu"
+  default     = "https://photoalbum-backend-photoalbum-f041om.apps.okd.fured.cloud.bme.hu/api"
 }
 
 variable "django_allowed_hosts" {
