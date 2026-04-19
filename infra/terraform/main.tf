@@ -13,7 +13,13 @@ terraform {
       version = "~> 3.0"
     }
   }
-  # State is stored locally; in CI the workflow caches terraform.tfstate between runs.
+
+  backend "azurerm" {
+    resource_group_name  = "PaaS-Labor-2026"
+    storage_account_name = "photoalbumf041om"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {

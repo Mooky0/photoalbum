@@ -60,14 +60,6 @@ jobs:
       - name: Set lowercase owner
         run: echo "IMAGE_OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Cache Terraform state
-        uses: actions/cache@v3
-        with:
-          path: infra/terraform/terraform.tfstate
-          key: terraform-state-${{ github.ref_name }}-${{ github.run_id }}
-          restore-keys: terraform-state-${{ github.ref_name }}-
-          save-always: true
-
       - name: Configure kubectl for OKD
         run: |
           kubectl config set-cluster okd \

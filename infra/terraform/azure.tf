@@ -1,6 +1,10 @@
 resource "azurerm_resource_group" "main" {
   name     = var.resource_group_name
   location = var.location
+
+  lifecycle {
+    ignore_changes = [location]
+  }
 }
 
 resource "azurerm_storage_account" "main" {
@@ -22,6 +26,7 @@ resource "azurerm_storage_account" "main" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes  = [location]
   }
 }
 
