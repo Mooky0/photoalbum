@@ -1,0 +1,33 @@
+image:
+  repository: ghcr.io/OWNER/photoalbum-backend
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+
+service:
+  port: 8000
+
+route:
+  host: ""
+
+django:
+  allowedHosts: "localhost,127.0.0.1"
+  secretKey: "change-me-in-production"
+
+azure:
+  accountName: "photoalbumf041om"
+  accountKey: "change-me-in-production"
+  container: "photos"
+
+postgresql:
+  username: photoalbum
+  password: "change-me-in-production"
+  database: photoalbum
+  storage: "1Gi"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 50

@@ -1,0 +1,16 @@
+image:
+  repository: ghcr.io/OWNER/photoalbum-frontend
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+
+service:
+  port: 3000
+
+route:
+  host: ""
+
+backend:
+  # This must match the OKD Route hostname of the backend (set via --set in CI)
+  apiUrl: "https://photoalbum-backend.apps.okd.example.com"
