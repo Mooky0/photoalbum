@@ -7,10 +7,5 @@ output "storage_primary_access_key" {
   sensitive = true
 }
 
-output "backend_route_host" {
-  value = kubernetes_manifest.backend_route.manifest.spec.host
-}
-
-output "frontend_route_host" {
-  value = kubernetes_manifest.frontend_route.manifest.spec.host
-}
+# Route hostnames are assigned by OKD after creation.
+# Check them with: kubectl get route -n <namespace>

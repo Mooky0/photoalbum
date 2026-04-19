@@ -98,26 +98,32 @@ resource "kubernetes_service" "backend" {
   }
 }
 
-resource "kubernetes_manifest" "backend_route" {
-  manifest = {
-    apiVersion = "route.openshift.io/v1"
-    kind       = "Route"
-    metadata = {
-      name      = "photoalbum-backend"
-      namespace = var.okd_namespace
-    }
-    spec = {
-      to = {
-        kind = "Service"
-        name = "photoalbum-backend"
-      }
-      port = {
-        targetPort = "8000"
-      }
-      tls = {
-        termination                   = "edge"
-        insecureEdgeTerminationPolicy = "Redirect"
-      }
-    }
+resource "null_resource" "backend_route" {
+  triggers = {
+    service = kubernetes_service.backend.metadata[0].name
+    ns      = var.okd_namespace
   }
+
+  provisioner "local-exec" {
+    command = <<-SHELL
+      kubectl apply -f - << 'YAML'
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: photoalbum-backend
+        namespace: ${var.okd_namespace}
+      spec:
+        to:
+          kind: Service
+          name: photoalbum-backend
+        port:
+          targetPort: "8000"
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Redirect
+      YAML
+    SHELL
+  }
+
+  depends_on = [kubernetes_service.backend]
 }

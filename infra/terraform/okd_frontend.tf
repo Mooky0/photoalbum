@@ -49,26 +49,32 @@ resource "kubernetes_service" "frontend" {
   }
 }
 
-resource "kubernetes_manifest" "frontend_route" {
-  manifest = {
-    apiVersion = "route.openshift.io/v1"
-    kind       = "Route"
-    metadata = {
-      name      = "photoalbum-frontend"
-      namespace = var.okd_namespace
-    }
-    spec = {
-      to = {
-        kind = "Service"
-        name = "photoalbum-frontend"
-      }
-      port = {
-        targetPort = "3000"
-      }
-      tls = {
-        termination                   = "edge"
-        insecureEdgeTerminationPolicy = "Redirect"
-      }
-    }
+resource "null_resource" "frontend_route" {
+  triggers = {
+    service = kubernetes_service.frontend.metadata[0].name
+    ns      = var.okd_namespace
   }
+
+  provisioner "local-exec" {
+    command = <<-SHELL
+      kubectl apply -f - << 'YAML'
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: photoalbum-frontend
+        namespace: ${var.okd_namespace}
+      spec:
+        to:
+          kind: Service
+          name: photoalbum-frontend
+        port:
+          targetPort: "3000"
+        tls:
+          termination: edge
+          insecureEdgeTerminationPolicy: Redirect
+      YAML
+    SHELL
+  }
+
+  depends_on = [kubernetes_service.frontend]
 }
