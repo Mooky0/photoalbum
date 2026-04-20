@@ -3,7 +3,6 @@ resource "kubernetes_persistent_volume_claim" "postgres" {
     name      = "photoalbum-postgresql-data"
     namespace = var.okd_namespace
     annotations = {
-      # Data survives `terraform destroy` — must be deleted manually.
       "terraform.io/ignore-changes" = "true"
     }
   }
